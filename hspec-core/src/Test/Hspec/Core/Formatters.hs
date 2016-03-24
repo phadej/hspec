@@ -19,6 +19,7 @@ module Test.Hspec.Core.Formatters (
 -- Actions live in the `FormatM` monad.  It provides access to the runner state
 -- and primitives for appending to the generated report.
 , Formatter (..)
+, FailureReason (..)
 , FormatM
 
 -- ** Accessing the runner state
@@ -50,14 +51,16 @@ module Test.Hspec.Core.Formatters (
 ) where
 
 import           Prelude ()
-import           Test.Hspec.Compat
+import           Test.Hspec.Compat hiding (First)
 
 import           Data.Maybe
+import           Data.List
 import           Test.Hspec.Core.Util
 import           Test.Hspec.Core.Spec (Location(..), LocationAccuracy(..))
 import           Text.Printf
 import           Control.Monad (when, unless)
 import           System.IO (hPutStr, hFlush)
+import           Data.Algorithm.Diff
 
 -- We use an explicit import list for "Test.Hspec.Formatters.Internal", to make
 -- sure, that we only use the public API to implement formatters.
@@ -66,6 +69,7 @@ import           System.IO (hPutStr, hFlush)
 -- their own formatters.
 import Test.Hspec.Core.Formatters.Internal (
     Formatter (..)
+  , FailureReason (..)
   , FormatM
 
   , getSuccessCount
@@ -89,6 +93,8 @@ import Test.Hspec.Core.Formatters.Internal (
   , withPendingColor
   , withFailColor
   )
+
+import           Test.Hspec.Core.Example (FailureReason(..))
 
 silent :: Formatter
 silent = Formatter {
@@ -186,11 +192,34 @@ defaultFailedFormatter = do
         withInfoColor $ writeLine (formatLoc loc)
       write ("  " ++ show n ++ ") ")
       writeLine (formatRequirement path)
-      withFailColor $ do
-        forM_ (lines err) $ \x -> do
-          writeLine ("       " ++ x)
+      case reason of
+        Left e -> let err = (("uncaught exception: " ++) . formatException) e in do
+          forM_ (lines err) $ \x -> do
+            writeLine ("       " ++ x)
+        Right NoReason -> return ()
+        Right (Reason err) -> do
+          forM_ (lines err) $ \x -> do
+            writeLine ("       " ++ x)
+        Right (ExpectedButGot preface expected actual) -> do
+          let foo = getGroupedDiff expected actual
+          mapM_ writeLine preface
+
+          write ("       " ++ "expected: ")
+          forM_ foo $ \chunk -> case chunk of
+            Both a _ -> write a
+            First a -> withFailColor $ write a
+            Second _ -> return ()
+          writeLine ""
+
+          write ("       " ++ "but got:  ")
+          forM_ foo $ \chunk -> case chunk of
+            Both a _ -> write a
+            First _ -> return ()
+            Second a -> withSuccessColor $ write a
+          writeLine ""
       where
-        err = either (("uncaught exception: " ++) . formatException) id reason
+        err = either (("uncaught exception: " ++) . formatException) formatFailureReason reason
+
         formatLoc (Location file line _column accuracy) = "  " ++ file ++ ":" ++ show line ++ ":" ++ message
           where
             message = case accuracy of
@@ -199,6 +228,11 @@ defaultFailedFormatter = do
                                    -- why we use a single space as message
                                    -- here.
               BestEffort -> " (best-effort)"
+
+formatFailureReason :: FailureReason -> String
+formatFailureReason NoReason = ""
+formatFailureReason (Reason reason) = reason
+formatFailureReason (ExpectedButGot preface expected actual) = intercalate "\n" . maybe id (:) preface $ ["expected: " ++ expected, " but got: " ++ actual]
 
 defaultFooter :: FormatM ()
 defaultFooter = do

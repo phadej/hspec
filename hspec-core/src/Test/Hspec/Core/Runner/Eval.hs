@@ -100,7 +100,7 @@ evalExample e = safeTry $ forceResult <$> e
     forceResult r = case r of
       Success -> r
       Pending m -> m `deepseq` r
-      Fail _ m -> m `deepseq` r
+      Fail _ _ -> r -- m `deepseq` r
 
 data Message = Done | Run (FormatM ())
 

@@ -9,6 +9,8 @@ module Test.Hspec.Core.Example (
 , Result (..)
 , Location (..)
 , LocationAccuracy (..)
+
+, FailureReason (..)
 ) where
 
 import           Data.Maybe (fromMaybe)
@@ -52,8 +54,11 @@ type ProgressCallback = Progress -> IO ()
 type ActionWith a = a -> IO ()
 
 -- | The result of running an example
-data Result = Success | Pending (Maybe String) | Fail (Maybe Location) String
+data Result = Success | Pending (Maybe String) | Fail (Maybe Location) FailureReason -- FIXME: rename Fail to Failure
   deriving (Eq, Show, Read, Typeable)
+
+data FailureReason = NoReason | Reason String | ExpectedButGot (Maybe String) String String
+    deriving (Eq, Show, Read, Typeable)
 
 instance E.Exception Result
 
@@ -76,7 +81,7 @@ data LocationAccuracy =
 
 instance Example Bool where
   type Arg Bool = ()
-  evaluateExample b _ _ _ = if b then return Success else return (Fail Nothing "")
+  evaluateExample b _ _ _ = if b then return Success else return (Fail Nothing NoReason)
 
 instance Example Expectation where
   type Arg Expectation = ()
@@ -87,7 +92,9 @@ hunitFailureToResult e = case e of
 #if MIN_VERSION_HUnit(1,3,0)
   HUnit.HUnitFailure mLoc err ->
 #if MIN_VERSION_HUnit(1,4,0)
-      Fail location (HUnit.formatFailureReason err)
+      case err of
+        HUnit.Reason reason -> Fail location (Reason reason)
+        HUnit.ExpectedButGot preface expected actual -> Fail location (ExpectedButGot preface expected actual)
 #else
       Fail location err
 #endif
@@ -121,11 +128,11 @@ instance Example (a -> QC.Property) where
     return $
       case r of
         QC.Success {}               -> Success
-        QC.Failure {QC.output = m}  -> fromMaybe (Fail Nothing $ sanitizeFailureMessage r) (parsePending m)
-        QC.GaveUp {QC.numTests = n} -> Fail Nothing ("Gave up after " ++ pluralize n "test" )
-        QC.NoExpectedFailure {}     -> Fail Nothing ("No expected failure")
+        QC.Failure {QC.output = m}  -> fromMaybe (Fail Nothing . Reason $ sanitizeFailureMessage r) (parsePending m)
+        QC.GaveUp {QC.numTests = n} -> Fail Nothing (Reason $ "Gave up after " ++ pluralize n "test" )
+        QC.NoExpectedFailure {}     -> Fail Nothing (Reason $ "No expected failure")
 #if MIN_VERSION_QuickCheck(2,8,0)
-        QC.InsufficientCoverage {}  -> Fail Nothing ("Insufficient coverage")
+        QC.InsufficientCoverage {}  -> Fail Nothing (Reason $ "Insufficient coverage")
 #endif
     where
       qcProgressCallback = QCP.PostTest QCP.NotCounterexample $

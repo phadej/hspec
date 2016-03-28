@@ -26,12 +26,18 @@ dependencies:
   - time
   - transformers >= 0.2.2.0
   - deepseq
-  - HUnit >= 1.2.5
+  - name: HUnit
+    github: hspec/HUnit
+    ref: failure-type
   - QuickCheck >= 2.5.1
-  - quickcheck-io
-  - hspec-expectations == 0.7.2.*
+  - name: quickcheck-io
+    github: sol/quickcheck-io
+    ref: hunit-1.4
+  - name: hspec-expectations
+    github: hspec/hspec-expectations
+    ref: diff-support
   - async >= 2
-  - Diff
+  - array
 
 library:
   source-dirs: src

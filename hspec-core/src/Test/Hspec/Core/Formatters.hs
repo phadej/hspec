@@ -60,7 +60,6 @@ import           Test.Hspec.Core.Spec (Location(..), LocationAccuracy(..))
 import           Text.Printf
 import           Control.Monad (when, unless)
 import           System.IO (hPutStr, hFlush)
-import           Data.Algorithm.Diff
 
 -- We use an explicit import list for "Test.Hspec.Formatters.Internal", to make
 -- sure, that we only use the public API to implement formatters.
@@ -94,6 +93,7 @@ import Test.Hspec.Core.Formatters.Internal (
   , withFailColor
   )
 
+import           Test.Hspec.Core.Formatters.Diff
 import           Test.Hspec.Core.Example (FailureReason(..))
 
 silent :: Formatter
@@ -201,7 +201,7 @@ defaultFailedFormatter = do
           forM_ (lines err) $ \x -> do
             writeLine ("       " ++ x)
         Right (ExpectedButGot preface expected actual) -> do
-          let foo = getGroupedDiff expected actual
+          let foo = diff expected actual
           mapM_ writeLine preface
 
           write ("       " ++ "expected: ")

@@ -1,4 +1,4 @@
--- This file has been generated from package.yaml by hpack version 0.11.0.
+-- This file has been generated from package.yaml by hpack version 0.11.2.
 --
 -- see: https://github.com/sol/hpack
 
@@ -37,12 +37,12 @@ library
     , time
     , transformers >= 0.2.2.0
     , deepseq
-    , HUnit >= 1.2.5
+    , HUnit
     , QuickCheck >= 2.5.1
     , quickcheck-io
-    , hspec-expectations == 0.7.2.*
+    , hspec-expectations
     , async >= 2
-    , Diff
+    , array
   exposed-modules:
       Test.Hspec.Core.Spec
       Test.Hspec.Core.Hooks
@@ -51,9 +51,11 @@ library
       Test.Hspec.Core.QuickCheck
       Test.Hspec.Core.Util
   other-modules:
+      Data.Algorithm.Diff
       Test.Hspec.Compat
       Test.Hspec.Config
       Test.Hspec.Core.Example
+      Test.Hspec.Core.Formatters.Diff
       Test.Hspec.Core.Formatters.Internal
       Test.Hspec.Core.QuickCheckUtil
       Test.Hspec.Core.Runner.Eval
@@ -81,12 +83,12 @@ test-suite spec
     , time
     , transformers >= 0.2.2.0
     , deepseq
-    , HUnit >= 1.2.5
+    , HUnit
     , QuickCheck >= 2.5.1
     , quickcheck-io
-    , hspec-expectations == 0.7.2.*
+    , hspec-expectations
     , async >= 2
-    , Diff
+    , array
     , hspec-meta >= 2.2.0
     , silently >= 1.2.4
     , process
@@ -95,6 +97,7 @@ test-suite spec
       Mock
       Test.Hspec.CompatSpec
       Test.Hspec.Core.ExampleSpec
+      Test.Hspec.Core.Formatters.DiffSpec
       Test.Hspec.Core.FormattersSpec
       Test.Hspec.Core.HooksSpec
       Test.Hspec.Core.QuickCheckUtilSpec
@@ -104,10 +107,12 @@ test-suite spec
       Test.Hspec.FailureReportSpec
       Test.Hspec.OptionsSpec
       Test.Hspec.TimerSpec
+      Data.Algorithm.Diff
       Test.Hspec.Compat
       Test.Hspec.Config
       Test.Hspec.Core.Example
       Test.Hspec.Core.Formatters
+      Test.Hspec.Core.Formatters.Diff
       Test.Hspec.Core.Formatters.Internal
       Test.Hspec.Core.Hooks
       Test.Hspec.Core.QuickCheck

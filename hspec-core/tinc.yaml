@@ -1,16 +1,4 @@
 dependencies:
-  - name: HUnit
-    github: hspec/HUnit
-    ref: ef680163abc1151b52573aba08af19a9b0840e7a
-
   - name: hspec-meta
     github: hspec/hspec
     ref: 88b2bb0de6b85947bb928b9241ffaa964aa80968
-
-  - name: quickcheck-io
-    github: sol/quickcheck-io
-    ref: 5e30f983cd1ce2759e502c0872b14e8889d8e5f4
-
-  - name: hspec-expectations
-    github: hspec/hspec-expectations
-    ref: e47f3766c9595aa8d99d397e8539171cb8da3d7b

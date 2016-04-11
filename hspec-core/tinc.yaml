@@ -1,4 +1,0 @@
-dependencies:
-  - name: hspec-meta
-    github: hspec/hspec
-    ref: 88b2bb0de6b85947bb928b9241ffaa964aa80968

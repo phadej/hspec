@@ -44,7 +44,7 @@ library
       src
   build-depends:
       base == 4.*
-    , hspec-core == 2.2.3
+    , hspec-core
     , hspec-discover == 2.2.3
     , hspec-expectations == 0.7.2.*
     , transformers >= 0.2.2.0
@@ -74,7 +74,7 @@ test-suite spec
       Test.Hspec.DiscoverSpec
   build-depends:
       base == 4.*
-    , hspec-core == 2.2.3
+    , hspec-core
     , hspec-discover == 2.2.3
     , hspec-expectations == 0.7.2.*
     , transformers >= 0.2.2.0

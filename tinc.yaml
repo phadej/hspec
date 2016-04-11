@@ -1,8 +1,0 @@
-dependencies:
-  - name: HUnit
-    github: hspec/HUnit
-    ref: ef680163abc1151b52573aba08af19a9b0840e7a
-
-  - name: quickcheck-io
-    github: sol/quickcheck-io
-    ref: 18b404d3ae979265f17b52a7d15a5e644239271c

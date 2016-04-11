@@ -56,6 +56,8 @@ tests:
       - test
       - src
     dependencies:
-      - hspec-meta >= 2.2.0
+      - name: hspec-meta
+        github: hspec/hspec
+        ref: 88b2bb0de6b85947bb928b9241ffaa964aa80968
       - silently >= 1.2.4
       - process

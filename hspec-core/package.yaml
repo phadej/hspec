@@ -30,8 +30,9 @@ dependencies:
   - HUnit >= 1.2.5
   - QuickCheck >= 2.5.1
   - quickcheck-io
-  - hspec-expectations == 0.7.2.*
+  - hspec-expectations == 0.8.0.*
   - async >= 2
+  - call-stack
 
 library:
   source-dirs: src
